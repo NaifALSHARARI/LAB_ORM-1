@@ -7,9 +7,7 @@ from .models import Blog
 def add_blogs_view(request:HttpRequest):
     try:
         if request.method == "POST":
-            new_blogs = Blog(title=request.POST["title"], content=request.POST["content"], is_published = request.POST["is_published"], published_at = request.POST["published_at"], category=request.POST["category"])
-            if "poster" in request.FILES:
-                new_blogs.poster = request.FILES["poster"]
+            new_blogs = Blog(title=request.POST["title"], content=request.POST["content"], is_published = request.POST["is_published"], published_at = request.POST["published_at"], category=request.POST["category"],poster=request.FILES['poster'])
             new_blogs.save()
             return redirect("blogs:show_blogs_view")
 
@@ -63,4 +61,13 @@ def blog_delete_view(request:HttpRequest, blog_id):
         
 
     
-    
+def search_results_view(request: HttpRequest):
+
+    if "search" in request.GET:
+        keyword = request.GET["search"]
+        blogs = Blog.objects.filter(title__contains=keyword)
+    else:
+        blogs = Blog.objects.all()
+
+
+    return render(request, "blogs/search.html", {"blogs" : blogs}) 
